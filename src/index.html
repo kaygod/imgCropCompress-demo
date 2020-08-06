@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding: 0;
+        }
+     .container{
+         width:1200px;
+         margin:0 auto;
+     }
+     .top{
+         margin:20px 0;
+     }
+     .generate{
+         color:#005aa0;
+         margin-left:20px;
+         cursor: pointer;
+     }
+     .original{
+        width: 600px;
+        height: 500px;
+        border: 1px solid #eee;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+     }
+     .production{
+         margin: 20px;
+         text-align: center
+     }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top">
+            <input type="file" onchange="updateFile(event)"/>
+            <select onchange="compress(event)" id="sel">
+                <option>1.0</option>
+                <option>0.8</option>
+                <option>0.5</option>
+                <option>0.1</option>
+            </select>
+            <a class="generate">生成</a>
+        </div>
+        <div class="original" id="original">
+
+        </div>
+        <div class="production" id="production">
+
+        </div>
+    </div>
+</body>
+<script src="main.js"></script>
+</html>
