@@ -2,7 +2,7 @@
 
     const img_types= ["image/jpeg","image/png"];
 
-    let img = null;
+    let img = null,compress_img = null;
 
     /**
      * 给input绑定事件
@@ -19,6 +19,20 @@
         placeImg(base64Code); //放置图片
 
     }
+
+    /**
+   * 下载图片
+   * @param {*}
+   */
+  function generate() {
+    if (!compress_img) {
+      return false;
+    }
+    const a = document.createElement('A');
+    a.href = compress_img.src;
+    a.download = 'download';
+    a.click();
+  }
 
     /**
      * 压缩图片
@@ -41,6 +55,7 @@
             const des = document.getElementById("production");
             des.innerHTML = "";
             des.appendChild(image);
+            compress_img = image;
         }
     }
 
@@ -117,5 +132,7 @@
     context.updateFile = updateFile;
 
     context.compress = compress;
+
+    context.generate = generate;
 
 })(window)
