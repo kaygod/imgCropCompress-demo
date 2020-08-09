@@ -4,6 +4,12 @@
 
     let img = null,compress_img = null;
 
+    function crop(){
+        new cropImg({
+            target:"box"
+        })
+    }
+
     /**
      * 给input绑定事件
      */
@@ -43,7 +49,7 @@
         }
         const value = Number(document.getElementById("sel").value);
         const canvas = document.createElement("CANVAS");
-        const w = img.width,h = img.height;
+        const w = parseInt(img.style.width),h = parseInt(img.style.height);
         canvas.width = w;
         canvas.height = h;
         var ctx = canvas.getContext("2d");
@@ -91,10 +97,13 @@
             }
             width = parseInt(width);
             height = parseInt(height);
+            const box = document.getElementById("box");
+            box.style.width = `${width}px`;
+            box.style.height = `${height}px`;
             image.style.width = `${width}px`;
             image.style.height = `${height}px`;
-            target.innerHTML = "";
-            target.appendChild(image);
+            box.style.background = `url(${code}) no-repeat`;
+            box.style.backgroundSize = "100% 100%";
             img = image;
             compress();
         }
@@ -134,5 +143,7 @@
     context.compress = compress;
 
     context.generate = generate;
+
+    context.crop = crop;
 
 })(window)

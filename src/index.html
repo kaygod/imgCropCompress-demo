@@ -35,6 +35,27 @@
          margin: 20px;
          text-align: center
      }
+     .box{
+         float:left;
+         position: relative;
+         overflow: hidden;
+     }
+     .mask{
+         position: absolute;
+         border :1px dashed #eee;
+         background: rgba(112,46,36,.6);
+         left:5px;
+         top:5px;
+     }
+     .symbol{
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        bottom: 0;
+        right: 0px;
+        background-color: #0B2;
+        cursor: crosshair;
+     }
     </style>
 </head>
 <body>
@@ -47,15 +68,18 @@
                 <option>0.5</option>
                 <option>0.1</option>
             </select>
+            <a class="generate" onclick="crop()">裁切</a>
             <a class="generate" onclick="generate()">生成</a>
         </div>
         <div class="original" id="original">
-
+            <div class="box" id="box">
+                
+            </div>
         </div>
         <div class="production" id="production">
-
         </div>
     </div>
 </body>
+<script src="cropImg.js"></script>
 <script src="main.js"></script>
 </html>
