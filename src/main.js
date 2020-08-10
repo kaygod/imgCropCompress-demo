@@ -6,7 +6,34 @@
 
     function crop(){
         new cropImg({
-            target:"box"
+            target:"box",
+            callback({left,top,width,height,container_height,container_width}){
+                const canvas_bak = document.createElement("CANVAS");
+                const ctx_bak = canvas_bak.getContext("2d");
+                canvas_bak.width = container_width;
+                canvas_bak.height = container_height;             
+                ctx_bak.drawImage(img,0,0,container_width,container_height);
+
+                const canvas = document.createElement("CANVAS");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#fff";         
+                ctx.fillRect(0, 0,width,height);
+                ctx.drawImage(canvas_bak,left,top,width,height,0,0,width,height);
+
+
+                const value = Number(document.getElementById("sel").value);
+                const code = canvas.toDataURL("image/jpeg",value);
+                const image = new Image();
+                image.src = code;
+                image.onload = ()=>{
+                    const des = document.getElementById("production");
+                    des.innerHTML = "";
+                    des.appendChild(image);
+                    compress_img = image;
+                }    
+            }
         })
     }
 
@@ -52,7 +79,7 @@
         const w = parseInt(img.style.width),h = parseInt(img.style.height);
         canvas.width = w;
         canvas.height = h;
-        var ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
         ctx.drawImage(img,0,0,w,h);
         const code = canvas.toDataURL("image/jpeg",value);
         const image = new Image();
