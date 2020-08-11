@@ -1,59 +1,75 @@
-(function(context){
+(function (context) {
+  const img_types = ['image/jpeg', 'image/png'];
 
-    const img_types= ["image/jpeg","image/png"];
+  let img = null,
+    compress_img = null;
 
-    let img = null,compress_img = null;
+  function crop() {
+    new cropImg({
+      target: 'box',
+      callback({
+        left,
+        top,
+        width,
+        height,
+        container_height,
+        container_width,
+      }) {
+        const canvas_bak = document.createElement('CANVAS');
+        const ctx_bak = canvas_bak.getContext('2d');
+        canvas_bak.width = container_width;
+        canvas_bak.height = container_height;
+        ctx_bak.drawImage(img, 0, 0, container_width, container_height);
 
-    function crop(){
-        new cropImg({
-            target:"box",
-            callback({left,top,width,height,container_height,container_width}){
-                const canvas_bak = document.createElement("CANVAS");
-                const ctx_bak = canvas_bak.getContext("2d");
-                canvas_bak.width = container_width;
-                canvas_bak.height = container_height;             
-                ctx_bak.drawImage(img,0,0,container_width,container_height);
+        const canvas = document.createElement('CANVAS');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(
+          canvas_bak,
+          left,
+          top,
+          width,
+          height,
+          0,
+          0,
+          width,
+          height
+        );
 
-                const canvas = document.createElement("CANVAS");
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext("2d");
-                ctx.fillStyle = "#fff";         
-                ctx.fillRect(0, 0,width,height);
-                ctx.drawImage(canvas_bak,left,top,width,height,0,0,width,height);
+        const value = Number(document.getElementById('sel').value);
+        const code = canvas.toDataURL('image/jpeg', value);
+        const image = new Image();
+        image.src = code;
+        image.onload = () => {
+          const des = document.getElementById('production');
+          des.innerHTML = '';
+          des.appendChild(image);
+          compress_img = image;
+        };
+      },
+    });
+  }
 
+  /**
+   * 给input绑定事件
+   */
+  async function updateFile(e) {
+    const file = e.target.files[0];
 
-                const value = Number(document.getElementById("sel").value);
-                const code = canvas.toDataURL("image/jpeg",value);
-                const image = new Image();
-                image.src = code;
-                image.onload = ()=>{
-                    const des = document.getElementById("production");
-                    des.innerHTML = "";
-                    des.appendChild(image);
-                    compress_img = image;
-                }    
-            }
-        })
+    if (!verify(file)) {
+      //参数校验
+      return false;
     }
 
-    /**
-     * 给input绑定事件
-     */
-    async function updateFile(e){
-        const file = e.target.files[0];
+    const base64Code = await getBase64(file); //获取base64编码
 
-        if(!verify(file)){ //参数校验
-            return false;
-        }
+    placeImg(base64Code); //放置图片
+  }
 
-        const base64Code = await getBase64(file);//获取base64编码
-
-        placeImg(base64Code); //放置图片
-
-    }
-
-    /**
+  /**
    * 下载图片
    * @param {*}
    */
@@ -67,110 +83,108 @@
     a.click();
   }
 
-    /**
-     * 压缩图片
-     */
-    function compress(){
-        if(!img){
-            return false;
-        }
-        const value = Number(document.getElementById("sel").value);
-        const canvas = document.createElement("CANVAS");
-        const w = parseInt(img.style.width),h = parseInt(img.style.height);
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img,0,0,w,h);
-        const code = canvas.toDataURL("image/jpeg",value);
-        const image = new Image();
-        image.src = code;
-        image.onload = ()=>{
-            const des = document.getElementById("production");
-            des.innerHTML = "";
-            des.appendChild(image);
-            compress_img = image;
-        }
+  /**
+   * 压缩图片
+   */
+  function compress() {
+    if (!img) {
+      return false;
     }
+    const value = Number(document.getElementById('sel').value);
+    const canvas = document.createElement('CANVAS');
+    const w = parseInt(img.style.width),
+      h = parseInt(img.style.height);
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    const code = canvas.toDataURL('image/jpeg', value);
+    const image = new Image();
+    image.src = code;
+    image.onload = () => {
+      const des = document.getElementById('production');
+      des.innerHTML = '';
+      des.appendChild(image);
+      compress_img = image;
+    };
+  }
 
-
-    /**
-     * 给图片设置合适的宽高放置在容器中
-     */
-    function placeImg(code){
-        const target = document.getElementById("original");
-        const max_width = parseInt(getComputedStyle(target).width);
-        const max_height = parseInt(getComputedStyle(target).height);
-        let width,height;
-        const image = new Image();
-        image.src = code;
-        image.onload = ()=>{
-            const naturalWidth = image.naturalWidth;
-            const naturalHeight = image.naturalHeight;
-            const radio = naturalWidth / naturalHeight;
-            if(radio >= 1){ //宽比高大
-                width =  naturalWidth < max_width?naturalWidth:max_width;
-                height = width * 1/radio;
-                if(height > max_height){
-                    height = max_height;
-                    width = height * radio;
-                }
-            }else{
-                height = naturalHeight < max_height?naturalHeight:max_height;
-                width = height * radio; 
-                if(width > max_width){
-                    width = max_width;
-                    height = width * 1/radio;
-                }
-            }
-            width = parseInt(width);
-            height = parseInt(height);
-            const box = document.getElementById("box");
-            box.style.width = `${width}px`;
-            box.style.height = `${height}px`;
-            image.style.width = `${width}px`;
-            image.style.height = `${height}px`;
-            box.style.background = `url(${code}) no-repeat`;
-            box.style.backgroundSize = "100% 100%";
-            img = image;
-            compress();
+  /**
+   * 给图片设置合适的宽高放置在容器中
+   */
+  function placeImg(code) {
+    const target = document.getElementById('original');
+    const max_width = parseInt(getComputedStyle(target).width);
+    const max_height = parseInt(getComputedStyle(target).height);
+    let width, height;
+    const image = new Image();
+    image.src = code;
+    image.onload = () => {
+      const naturalWidth = image.naturalWidth;
+      const naturalHeight = image.naturalHeight;
+      const radio = naturalWidth / naturalHeight;
+      if (radio >= 1) {
+        //宽比高大
+        width = naturalWidth < max_width ? naturalWidth : max_width;
+        height = (width * 1) / radio;
+        if (height > max_height) {
+          height = max_height;
+          width = height * radio;
         }
-    }
-
-
-    /**
-     * 参数校验
-     * @param {*} file 
-     */
-    function verify(file){
-        const { size,type } = file;
-        if(size > 5 * 1024 * 1024 ){
-            alert("上传图片大小不能超过5M");
-            return false;
+      } else {
+        height = naturalHeight < max_height ? naturalHeight : max_height;
+        width = height * radio;
+        if (width > max_width) {
+          width = max_width;
+          height = (width * 1) / radio;
         }
-        if(!img_types.includes(type)){
-            alert("请上传图片");
-            return false;
-        }
-        return true;
+      }
+      width = parseInt(width);
+      height = parseInt(height);
+      const box = document.getElementById('box');
+      box.style.width = `${width}px`;
+      box.style.height = `${height}px`;
+      image.style.width = `${width}px`;
+      image.style.height = `${height}px`;
+      box.style.background = `url(${code}) no-repeat`;
+      box.style.backgroundSize = '100% 100%';
+      img = image;
+      compress();
+    };
+  }
+
+  /**
+   * 参数校验
+   * @param {*} file
+   */
+  function verify(file) {
+    const { size, type } = file;
+    if (size > 5 * 1024 * 1024) {
+      alert('上传图片大小不能超过5M');
+      return false;
     }
-
-    function getBase64(file){
-        return new Promise((resolve)=>{
-            const fileReader = new FileReader();
-            fileReader.onload = (e)=>{
-                resolve(e.target.result);
-            }
-            fileReader.readAsDataURL(file);
-        }) 
+    if (!img_types.includes(type)) {
+      alert('请上传图片');
+      return false;
     }
+    return true;
+  }
 
+  function getBase64(file) {
+    return new Promise((resolve) => {
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        resolve(e.target.result);
+      };
+      fileReader.readAsDataURL(file);
+    });
+  }
 
-    context.updateFile = updateFile;
+  context.updateFile = updateFile;
 
-    context.compress = compress;
+  context.compress = compress;
 
-    context.generate = generate;
+  context.generate = generate;
 
-    context.crop = crop;
-
-})(window)
+  context.crop = crop;
+})(window);
