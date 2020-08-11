@@ -2,10 +2,10 @@
   const img_types = ['image/jpeg', 'image/png'];
 
   let img = null,
-    compress_img = null;
+    compress_img = null,crop_obj = null;
 
   function crop() {
-    new cropImg({
+    const obj = new cropImg({
       target: 'box',
       callback({
         left,
@@ -51,6 +51,9 @@
         };
       },
     });
+
+    return obj;
+
   }
 
   /**
@@ -186,5 +189,10 @@
 
   context.generate = generate;
 
-  context.crop = crop;
+  context.crop = function(){
+    if(crop_obj || !img){
+      return false;
+    }
+    crop_obj = crop();
+  };
 })(window);
