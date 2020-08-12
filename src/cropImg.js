@@ -18,7 +18,7 @@ function cropImg(options) {
 cropImg.prototype.init = function () {
   this.renderBox(); //给box框绑定事件
   this.renderSymbol(); //给右下角拉伸块绑定事件
-  this.mouseUp();//初次加载触发一次裁剪
+  this.mouseUp(); //初次加载触发一次裁剪
 };
 
 /**
@@ -37,8 +37,8 @@ cropImg.prototype.renderBox = function () {
   const container = document.createElement('DIV');
   container.style.width = `${this.width}px`;
   container.style.height = `${this.height}px`;
-  container.style.left = `${this.container_width/2 - this.width/2}px`; //初次加载模态框放到正中间的位置 
-  container.style.top = `${this.container_height/2 - this.height/2}px`;
+  container.style.left = `${this.container_width / 2 - this.width / 2}px`; //初次加载模态框放到正中间的位置
+  container.style.top = `${this.container_height / 2 - this.height / 2}px`;
   container.setAttribute('class', 'mask');
 
   this.bindMouseEvent({
@@ -137,11 +137,10 @@ cropImg.prototype.strategyEvent = function (key, idx) {
   return funList[key];
 };
 
-
 /**
  * mouseup处理函数
  */
-cropImg.prototype.mouseUp = function(){
+cropImg.prototype.mouseUp = function () {
   Array.from(Array(this.mouse_index)).forEach((value, idx) => {
     this[`mouse_${idx + 1}`] = false;
   });
@@ -154,7 +153,7 @@ cropImg.prototype.mouseUp = function(){
     container_height: this.container_height,
     container_width: this.container_width,
   });
-}
+};
 /**
  * 对mouseup事件单独处理
  */
@@ -166,7 +165,7 @@ cropImg.prototype.mouseUpHandler = function () {
   this.fun_list.push({
     //将所有注册的事件收集起来,插件需要销毁时对事件解绑
     ele: document,
-    fn:this.mouseUp,
+    fn: this.mouseUp,
     event: 'mouseup',
   });
   document.addEventListener('mouseup', this.mouseUp.bind(this));
