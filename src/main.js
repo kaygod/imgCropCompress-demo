@@ -2,7 +2,8 @@
   const img_types = ['image/jpeg', 'image/png'];
 
   let img = null,
-    compress_img = null,crop_obj = null;
+    compress_img = null,
+    crop_obj = null;
 
   function crop() {
     const obj = new cropImg({
@@ -53,7 +54,6 @@
     });
 
     return obj;
-
   }
 
   /**
@@ -189,8 +189,8 @@
 
   context.generate = generate;
 
-  context.crop = function(){
-    if(crop_obj || !img){
+  context.crop = function () {
+    if (crop_obj || !img) {
       return false;
     }
     crop_obj = crop();
